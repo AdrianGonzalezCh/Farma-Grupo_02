@@ -8,6 +8,10 @@ import com.mycompany.farma.grupo_02.model.Medicamento;
 import com.mycompany.farma.grupo_02.model.Medico;
 import com.mycompany.farma.grupo_02.model.Paciente;
 import com.mycompany.farma.grupo_02.model.Usuario;
+import com.mycompany.farma.grupo_02.dao.DispensacionDAO;
+import com.mycompany.farma.grupo_02.dao.RecetaDAO;
+import com.mycompany.farma.grupo_02.model.Receta;
+import com.mycompany.farma.grupo_02.model.RecetaDetalle;
 import java.sql.SQLException;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -19,6 +23,8 @@ public class AppFarma {
     private static final PacienteDAO pacienteDAO = new PacienteDAO();
     private static final MedicoDAO medicoDAO = new MedicoDAO();
     private static final MedicamentoDAO medicamentoDAO = new MedicamentoDAO();
+    private static final RecetaDAO recetaDAO = new RecetaDAO();
+    private static final DispensacionDAO dispensacionDAO = new DispensacionDAO();
 
     public static void main(String[] args) {
         iniciarAplicacion();
@@ -72,24 +78,29 @@ public class AppFarma {
     private static void menuPrincipal(Usuario usuarioLogueado) {
         while (true) {
             String menu = """
-                    Seleccione una opcion:
+        Seleccione una opcion:
 
-                    1. Registrar paciente
-                    2. Consultar paciente por ID
-                    3. Listar pacientes
+        1. Registrar paciente
+        2. Consultar paciente por ID
+        3. Listar pacientes
 
-                    4. Registrar medicamento
-                    5. Consultar medicamento por ID
-                    6. Listar medicamentos
+        4. Registrar medicamento
+        5. Consultar medicamento por ID
+        6. Listar medicamentos
 
-                    7. Registrar usuario
-                    8. Consultar usuario por ID
+        7. Registrar usuario
+        8. Consultar usuario por ID
 
-                    9. Registrar medico
-                    10. Consultar medico por ID
+        9. Registrar medico
+        10. Consultar medico por ID
 
-                    0. Salir
-                    """;
+        11. Registrar receta
+        12. Consultar receta por ID
+        13. Dispensar medicamento
+        14. Anular dispensacion
+
+        0. Salir
+        """;
 
             String opcionStr = JOptionPane.showInputDialog(null, menu, "Menu Principal - Farma", JOptionPane.QUESTION_MESSAGE);
 
@@ -123,6 +134,10 @@ public class AppFarma {
                     case 8 -> consultarUsuario();
                     case 9 -> registrarMedico();
                     case 10 -> consultarMedico();
+                    case 11 -> registrarReceta();
+                    case 12 -> consultarReceta();
+                    case 13 -> dispensarMedicamento(usuarioLogueado);
+                    case 14 -> anularDispensacion();
                     case 0 -> {
                         JOptionPane.showMessageDialog(null, "Hasta luego.");
                         return;
@@ -440,4 +455,203 @@ public class AppFarma {
 
         JOptionPane.showMessageDialog(null, area, titulo, JOptionPane.INFORMATION_MESSAGE);
     }
+
+private static void registrarReceta() {
+    try {
+        Integer idPaciente = pedirEntero("ID del paciente:");
+        if (idPaciente == null) return;
+
+        Integer idMedico = pedirEntero("ID del medico:");
+        if (idMedico == null) return;
+
+        String observaciones = pedirTexto("Observaciones de la receta:");
+        if (observaciones == null) return;
+
+        Integer cantidadDetalles = pedirEntero("Cuantos medicamentos desea agregar a la receta?");
+        if (cantidadDetalles == null || cantidadDetalles <= 0) {
+            JOptionPane.showMessageDialog(null, "Debe ingresar al menos un detalle.");
+            return;
+        }
+
+        java.util.List<RecetaDetalle> detalles = new java.util.ArrayList<>();
+
+        for (int i = 1; i <= cantidadDetalles; i++) {
+            Integer idMedicamento = pedirEntero("Detalle " + i + " - ID del medicamento:");
+            if (idMedicamento == null) return;
+
+            String dosis = pedirTexto("Detalle " + i + " - Dosis:");
+            if (dosis == null) return;
+
+            Integer cantidadAutorizada = pedirEntero("Detalle " + i + " - Cantidad autorizada:");
+            if (cantidadAutorizada == null || cantidadAutorizada <= 0) {
+                JOptionPane.showMessageDialog(null, "La cantidad autorizada debe ser mayor que cero.");
+                return;
+            }
+
+            String indicaciones = pedirTexto("Detalle " + i + " - Indicaciones:");
+            if (indicaciones == null) return;
+
+            RecetaDetalle detalle = new RecetaDetalle();
+            detalle.setIdMedicamento(idMedicamento);
+            detalle.setDosis(dosis);
+            detalle.setCantidadAutorizada(cantidadAutorizada);
+            detalle.setIndicaciones(indicaciones);
+
+            detalles.add(detalle);
+        }
+
+        Receta receta = new Receta();
+        receta.setIdPaciente(idPaciente);
+        receta.setIdMedico(idMedico);
+        receta.setObservaciones(observaciones);
+
+        int idRecetaGenerada = recetaDAO.insertarReceta(receta);
+
+        for (RecetaDetalle detalle : detalles) {
+            detalle.setIdReceta(idRecetaGenerada);
+            recetaDAO.insertarDetalleReceta(detalle);
+        }
+
+        JOptionPane.showMessageDialog(
+                null,
+                "Receta registrada correctamente.\nID generado: " + idRecetaGenerada,
+                "Receta",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Error al registrar receta: " + e.getMessage());
+    }
+}
+
+private static void consultarReceta() {
+    try {
+        Integer idReceta = pedirEntero("Ingrese el ID de la receta:");
+        if (idReceta == null) return;
+
+        Receta receta = recetaDAO.consultarRecetaPorId(idReceta);
+
+        if (receta != null) {
+            JOptionPane.showMessageDialog(null, receta.toString(), "Receta encontrada", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "No se encontro la receta.");
+        }
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Error al consultar receta: " + e.getMessage());
+    }
+}
+
+private static void dispensarMedicamento(Usuario usuarioLogueado) {
+    Integer idDispensacion = null;
+    boolean primerDetalleInsertado = false;
+
+    try {
+        Integer idReceta = pedirEntero("ID de la receta:");
+        if (idReceta == null) return;
+
+        String observaciones = pedirTexto("Observaciones de la dispensacion:");
+        if (observaciones == null) return;
+
+        Integer idRecetaDetalle = pedirEntero("ID del detalle de receta:");
+        if (idRecetaDetalle == null) return;
+
+        Integer idMedicamento = pedirEntero("ID del medicamento:");
+        if (idMedicamento == null) return;
+
+        Integer cantidad = pedirEntero("Cantidad a dispensar:");
+        if (cantidad == null || cantidad <= 0) {
+            JOptionPane.showMessageDialog(null, "La cantidad debe ser mayor que cero.");
+            return;
+        }
+
+        idDispensacion = dispensacionDAO.insertarDispensacion(
+                idReceta,
+                usuarioLogueado.getIdUsuario(),
+                observaciones
+        );
+
+        dispensacionDAO.dispensarMedicamento(
+                idDispensacion,
+                idRecetaDetalle,
+                idMedicamento,
+                cantidad
+        );
+
+        primerDetalleInsertado = true;
+
+        while (true) {
+            int respuesta = JOptionPane.showConfirmDialog(
+                    null,
+                    "Desea agregar otro detalle a esta misma dispensacion?",
+                    "Dispensacion",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (respuesta != JOptionPane.YES_OPTION) {
+                break;
+            }
+
+            Integer otroIdRecetaDetalle = pedirEntero("ID del detalle de receta:");
+            if (otroIdRecetaDetalle == null) break;
+
+            Integer otroIdMedicamento = pedirEntero("ID del medicamento:");
+            if (otroIdMedicamento == null) break;
+
+            Integer otraCantidad = pedirEntero("Cantidad a dispensar:");
+            if (otraCantidad == null || otraCantidad <= 0) {
+                JOptionPane.showMessageDialog(null, "La cantidad debe ser mayor que cero.");
+                break;
+            }
+
+            dispensacionDAO.dispensarMedicamento(
+                    idDispensacion,
+                    otroIdRecetaDetalle,
+                    otroIdMedicamento,
+                    otraCantidad
+            );
+        }
+
+        JOptionPane.showMessageDialog(
+                null,
+                "Dispensacion registrada correctamente.\nID generado: " + idDispensacion,
+                "Dispensacion",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+
+    } catch (SQLException e) {
+        if (idDispensacion != null && !primerDetalleInsertado) {
+            try {
+                dispensacionDAO.anularDispensacion(idDispensacion);
+            } catch (SQLException ex) {
+                // Se ignora para no ocultar el error principal
+            }
+        }
+
+        JOptionPane.showMessageDialog(null, "Error al dispensar: " + e.getMessage());
+    }
+}
+
+private static void anularDispensacion() {
+    try {
+        Integer idDispensacion = pedirEntero("Ingrese el ID de la dispensacion a anular:");
+        if (idDispensacion == null) return;
+
+        boolean resultado = dispensacionDAO.anularDispensacion(idDispensacion);
+
+        JOptionPane.showMessageDialog(
+                null,
+                "Dispensacion anulada: " + resultado,
+                "Anular dispensacion",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Error al anular dispensacion: " + e.getMessage());
+    }
+}
+
+
+
+
 }
