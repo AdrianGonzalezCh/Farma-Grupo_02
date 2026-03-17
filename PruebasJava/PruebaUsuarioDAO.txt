@@ -1,0 +1,7 @@
+package com.mycompany.farma.grupo_02.test;
+
+public class PruebaUsuarioDAO {
+    public static void main(String[] args) {
+        System.out.println("Prueba Usuario DAO ejecutada");
+    }
+}

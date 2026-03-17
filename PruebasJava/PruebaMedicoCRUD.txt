@@ -1,0 +1,7 @@
+package com.mycompany.farma.grupo_02.test;
+
+public class PruebaMedicoCRUD {
+    public static void main(String[] args) {
+        System.out.println("Prueba Medico CRUD ejecutada");
+    }
+}
