@@ -1,0 +1,20 @@
+package com.mycompany.farma.grupo_02.test;
+
+import com.mycompany.farma.grupo_02.conexion.ConexionOracle;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+public class PruebaConexion {
+
+    public static void main(String[] args) {
+        try (Connection conn = ConexionOracle.conectar()) {
+            if (conn != null && !conn.isClosed()) {
+                System.out.println("Conexion exitosa con Oracle.");
+            } else {
+                System.out.println("No se pudo establecer la conexion.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al conectar con Oracle: " + e.getMessage());
+        }
+    }
+}
