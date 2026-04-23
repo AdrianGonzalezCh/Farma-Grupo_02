@@ -1,0 +1,698 @@
+LEAME.txt
+Universidad Fidélitas 
+CURSO: Lenguajes de Base de Datos 
+Grupo: 02
+PROYECTO: Farma-Grupo_02
+
+SISTEMA: Registro de recetas médicas y control de dispensación de medicamentos
+EMPRESA CASO DE ESTUDIO: Farmacia La Bomba, sucursal Cartago
+
+====================================================================
+1. PROPOSITO DE ESTE ARCHIVO
+====================================================================
+Este archivo explica, paso a paso y desde cero, qué programas necesita el profesor,
+qué versiones deben utilizarse y cuál es el orden correcto para instalar, configurar,
+compilar y ejecutar el proyecto Farma-Grupo_02.
+
+====================================================================
+2. RESUMEN TECNICO DEL PROYECTO
+====================================================================
+Este proyecto consiste en una aplicación Java conectada a Oracle Database para gestionar:
+- usuarios,
+- pacientes,
+- médicos,
+- medicamentos,
+- recetas,
+- dispensaciones,
+- anulación de dispensaciones,
+- trazabilidad por medio de bitácora y movimientos de inventario.
+
+La lógica principal del negocio se ejecuta en Oracle mediante:
+- tablas,
+- constraints,
+- vistas,
+- funciones,
+- procedimientos almacenados,
+- paquetes,
+- triggers,
+- cursores.
+
+La aplicación Java se conecta por JDBC y consume procedimientos almacenados.
+
+====================================================================
+3. PROGRAMAS NECESARIOS Y VERSIONES
+====================================================================
+A continuación se indican los programas requeridos para ejecutar exactamente este proyecto.
+
+3.1. ORACLE DATABASE 
+- Programa requerido: Oracle Database 19c
+- Uso en el proyecto: motor de base de datos principal
+- Observación: el proyecto fue preparado para trabajar con un servicio local Oracle y un
+  usuario llamado FARMA.
+
+3.2. ORACLE SQL DEVELOPER
+- Programa requerido: Oracle SQL Developer
+- Uso en el proyecto: ejecutar scripts SQL/PLSQL, revisar tablas, procedimientos,
+  paquetes, triggers, vistas y datos.
+
+3.3. APACHE NETBEANS
+- Version usada en el proyecto: Apache NetBeans 29
+- Uso en el proyecto: abrir, compilar y ejecutar la aplicación Java.
+
+3.4. JDK de Java
+- Version requerida por el proyecto: JDK 25
+- Observación importante: aunque la aplicación podría adaptarse a otra versión de Java,
+  para ejecutar exactamente el proyecto entregado, lo correcto es usar JDK 25.
+
+3.5. Maven
+- Tipo de proyecto: Maven
+
+3.6. Driver JDBC de Oracle
+- Dependencia declarada en el proyecto:
+  com.oracle.database.jdbc:ojdbc11:23.4.0.24.05
+- Importante: en la primera compilación, Maven puede requerir conexión a Internet para
+  descargar esta dependencia si no se encuentra ya en la caché local del equipo.
+
+====================================================================
+4. DATOS DE CONEXION QUE USA EL PROYECTO JAVA
+====================================================================
+La aplicación Java viene configurada con los siguientes datos:
+src/main/java/com/mycompany/farma/grupo_02/conexion/ConexionOracle.java
+
+- URL JDBC: jdbc:oracle:thin:@localhost:1521/orcl
+- Usuario Oracle: FARMA
+- Clave Oracle: Farma123
+
+Esto significa que, para que el proyecto funcione sin modificar código, el profesor debe
+contar con:
+- Oracle ejecutándose en la máquina local,
+- listener en el puerto 1521,
+- servicio Oracle llamado ORCL,
+- usuario FARMA con clave Farma123.
+
+Si el profesor tiene una instalación Oracle 19c cuyo servicio no se llama ORCL, deberá
+hacer UNA de estas dos cosas:
+
+OPCION A (recomendada para correr el proyecto sin tocar código):
+- crear/usar una base o servicio llamado ORCL.
+
+OPCION B:
+- editar el archivo ConexionOracle.java y cambiar la URL por el servicio real del equipo,
+  por ejemplo XEPDB1, ORCLPDB, etc.
+- después de eso, guardar, limpiar y volver a ejecutar el proyecto.
+
+====================================================================
+5. CREDENCIALES INICIALES DE LA APLICACION
+====================================================================
+Los datos de prueba incluidos en el script de carga crean al menos estos usuarios para
+iniciar sesión en la aplicación:
+
+5.1. Usuario administrador
+- username: admin
+- clave: admin123
+
+5.2. Usuario farmacéutico
+- username: rosa
+- clave: rosa123
+
+Estas credenciales se encuentran en:
+BASE_DATOS/09_datos_prueba/datos_prueba_farma.sql
+
+====================================================================
+6. ESTRUCTURA DEL PROYECTO ENTREGADO
+====================================================================
+Raíz del proyecto:
+- pom.xml
+- nbactions.xml
+- src/
+- BASE_DATOS/
+
+Carpetas de base de datos incluidas:
+- 00_instalacion
+- 01_tablas
+- 02_constraints
+- 03_vistas
+- 04_funciones
+- 05_procedimientos
+- 06_paquetes
+- 07_triggers
+- 08_cursores
+- 09_datos_prueba
+- 10_diccionario
+
+Archivos SQL principales:
+- BASE_DATOS/00_instalacion/CREAR_usuario_farma.sql
+- BASE_DATOS/01_tablas/crear_tablas_farma.sql
+- BASE_DATOS/02_constraints/constraints_farma.sql
+- BASE_DATOS/03_vistas/vistas_farma.sql
+- BASE_DATOS/04_funciones/funciones_farma.sql
+- BASE_DATOS/05_procedimientos/procedimientos_farma_parte1.sql
+- BASE_DATOS/05_procedimientos/procedimientos_farma_parte2.sql
+- BASE_DATOS/05_procedimientos/Login_usuario.sql
+- BASE_DATOS/05_procedimientos/ajustes_java_receta.sql
+- BASE_DATOS/05_procedimientos/Ajuste_Dispensar_Medicamento.sql
+- BASE_DATOS/05_procedimientos/Ajuste_Anular_Dispensacion.sql
+- BASE_DATOS/05_procedimientos/listados_java.sql
+- BASE_DATOS/06_paquetes/paquetes_farma_parte1.sql
+- BASE_DATOS/06_paquetes/paquetes_farma_parte2.sql
+- BASE_DATOS/07_triggers/triggers_farma.sql
+- BASE_DATOS/08_cursores/cursores_farma.sql
+- BASE_DATOS/09_datos_prueba/datos_prueba_farma.sql
+- BASE_DATOS/10_diccionario/Diccionario_Base_datos-FARMA.xlsx
+
+
+====================================================================
+7. PREPARACION DEL EQUIPO ANTES DE EJECUTAR EL PROYECTO
+====================================================================
+PASO 01.
+Descargar o copiar el archivo ZIP del proyecto a una carpeta local del equipo.
+
+PASO 02.
+Descomprimir el ZIP completo.
+
+PASO 03.
+Verificar que después de descomprimir existan, al menos, estas rutas:
+- Farma-Grupo_02/pom.xml
+- Farma-Grupo_02/src/
+- Farma-Grupo_02/BASE_DATOS/
+
+PASO 04.
+Instalar Oracle Database 19c, si el equipo aún no lo tiene instalado.
+
+PASO 05.
+Instalar Oracle SQL Developer.
+
+PASO 06.
+Instalar JDK 25.
+
+PASO 07.
+Instalar Apache NetBeans 29.
+
+PASO 08.
+Abrir Oracle Database y confirmar que el listener y la base/servicio estén activos.
+
+PASO 09.
+Abrir SQL Developer.
+
+====================================================================
+8. CREACION DE LA BASE DE DATOS DEL PROYECTO DESDE CERO
+====================================================================
+IMPORTANTE:
+El script 00_instalacion crea el usuario FARMA y por eso debe ejecutarse con una cuenta
+administrativa, por ejemplo SYS, usando privilegios elevados.
+
+PASO 10.
+En SQL Developer, crear una conexión como SYS.
+
+Sugerencia de conexión:
+- Usuario: SYS
+- Contraseña: la correspondiente al equipo del profesor
+- Rol: SYSDBA
+- Host: localhost
+- Puerto: 1521
+- Servicio: ORCL (o el que tenga el equipo)
+
+PASO 11.
+Abrir y ejecutar el archivo:
+BASE_DATOS/00_instalacion/CREAR_usuario_farma.sql
+
+Qué hace este script:
+- habilita la sesión para creación de usuario,
+- crea el usuario FARMA,
+- asigna permisos básicos,
+- asigna cuota ilimitada en USERS.
+
+PASO 12.
+Verificar que el usuario FARMA fue creado correctamente.
+
+PASO 13.
+Crear una nueva conexión en SQL Developer con el usuario del proyecto:
+- Usuario: FARMA
+- Contraseña: Farma123
+- Host: localhost
+- Puerto: 1521
+- Servicio: ORCL
+
+PASO 14.
+Conectarse con FARMA.
+
+====================================================================
+9. ORDEN CORRECTO DE EJECUCION DE LOS SCRIPTS
+====================================================================
+Para mantener consistencia con la estructura entregada, ejecutar los scripts en el orden
+numérico de las carpetas.
+
+IMPORTANTE SOBRE LA FORMA DE EJECUCION:
+- Se recomienda usar "Run Script" (F5) en SQL Developer y no solamente "Run Statement"
+  (Ctrl+Enter), porque varios archivos contienen bloques PL/SQL y definiciones separadas por /
+- Revisar siempre el panel de salida para confirmar que no haya errores de compilación.
+
+PASO 15.
+Ejecutar:
+BASE_DATOS/01_tablas/crear_tablas_farma.sql
+
+Resultado esperado:
+- creación de las tablas principales y de soporte.
+
+PASO 16.
+Ejecutar:
+BASE_DATOS/02_constraints/constraints_farma.sql
+
+Resultado esperado:
+- creación de claves foráneas,
+- checks,
+- restricciones de integridad.
+
+PASO 17.
+Ejecutar:
+BASE_DATOS/03_vistas/vistas_farma.sql
+
+Resultado esperado:
+- creación de vistas de consulta para usuarios, pacientes, médicos, medicamentos,
+  recetas y otros componentes del sistema.
+
+PASO 18.
+Ejecutar:
+BASE_DATOS/04_funciones/funciones_farma.sql
+
+Resultado esperado:
+- creación de funciones PL/SQL auxiliares para validaciones, nombres completos,
+  pendientes, cálculos y apoyo al negocio.
+
+PASO 19.
+Ejecutar, uno por uno, los archivos de procedimientos dentro de:
+BASE_DATOS/05_procedimientos/
+
+Orden recomendado dentro de esa carpeta:
+1. procedimientos_farma_parte1.sql
+2. procedimientos_farma_parte2.sql
+3. Login_usuario.sql
+4. ajustes_java_receta.sql
+5. Ajuste_Dispensar_Medicamento.sql
+6. Ajuste_Anular_Dispensacion.sql
+7. listados_java.sql
+
+Resultado esperado:
+- procedimientos CRUD,
+- login del sistema,
+- registro y consulta de receta,
+- dispensación,
+- anulación,
+- listados usados por Java.
+
+PASO 20.
+Ejecutar, en este orden:
+- BASE_DATOS/06_paquetes/paquetes_farma_parte1.sql
+- BASE_DATOS/06_paquetes/paquetes_farma_parte2.sql
+
+Resultado esperado:
+- paquetes PL/SQL agrupando lógica por dominio funcional.
+
+PASO 21.
+Ejecutar:
+BASE_DATOS/07_triggers/triggers_farma.sql
+
+Resultado esperado:
+- triggers para bitácora,
+- triggers de movimientos de inventario,
+- automatismos asociados a inserciones/actualizaciones.
+
+PASO 22.
+Ejecutar:
+BASE_DATOS/08_cursores/cursores_farma.sql
+
+Observación importante:
+- este archivo contiene bloques PL/SQL de demostración con DBMS_OUTPUT,
+- no es estrictamente indispensable para que la aplicación Java funcione,
+- pero sí forma parte del proyecto entregado y conviene ejecutarlo para dejar completa
+  la instalación académica.
+
+PASO 23.
+Ejecutar:
+BASE_DATOS/09_datos_prueba/datos_prueba_farma.sql
+
+Resultado esperado:
+- inserción de roles,
+- usuarios,
+- pacientes,
+- médicos,
+- medicamentos,
+- recetas,
+- detalles de receta.
+
+NOTA IMPORTANTE:
+Como los triggers ya estarán creados cuando se carguen ciertos datos, es normal que se
+registren entradas automáticas relacionadas con bitácora u otros movimientos derivados.
+Eso es parte esperada del comportamiento del sistema.
+
+PASO 24.
+El archivo:
+BASE_DATOS/10_diccionario/Diccionario_Base_datos-FARMA.xlsx
+no se ejecuta.
+
+Ese archivo sirve únicamente como:
+- evidencia documental,
+- apoyo para revisión de estructura,
+- diccionario de datos exportado.
+
+====================================================================
+10. VERIFICACION DE LA BASE DE DATOS DESPUES DE INSTALAR LOS SCRIPTS
+====================================================================
+PASO 25.
+Verificar en SQL Developer que existan, como mínimo, las tablas principales:
+- ROL
+- USUARIO
+- PACIENTE
+- MEDICO
+- MEDICAMENTO
+- RECETA
+- RECETA_DETALLE
+- DISPENSACION
+- DISPENSACION_DETALLE
+- BITACORA
+- MOVIMIENTO_INVENTARIO
+
+PASO 26.
+Verificar que existan vistas, funciones, procedimientos, paquetes y triggers.
+
+PASO 27.
+Verificar datos de prueba ejecutando consultas simples como estas:
+
+SELECT * FROM ROL;
+SELECT * FROM USUARIO;
+SELECT * FROM PACIENTE;
+SELECT * FROM MEDICAMENTO;
+SELECT * FROM RECETA;
+SELECT * FROM RECETA_DETALLE;
+
+PASO 28.
+Confirmar que exista el usuario admin dentro de la tabla USUARIO.
+
+====================================================================
+11. APERTURA DEL PROYECTO JAVA EN NETBEANS
+====================================================================
+PASO 29.
+Abrir Apache NetBeans 29.
+
+PASO 30.
+Ir a:
+File > Open Project
+
+PASO 31.
+Seleccionar la carpeta raíz del proyecto descomprimido:
+Farma-Grupo_02
+
+PASO 32.
+Esperar a que NetBeans reconozca el proyecto Maven.
+
+PASO 33.
+Verificar que NetBeans detecte correctamente:
+- pom.xml,
+- Source Packages,
+- las clases dentro de src/main/java.
+
+PASO 34.
+Si NetBeans solicita descargar dependencias Maven, permitirlo.
+
+PASO 35.
+Esperar a que Maven descargue la dependencia:
+- ojdbc11 23.4.0.24.05
+
+PASO 36.
+Si el proyecto aparece con error de plataforma Java, configurar JDK 25 dentro de NetBeans.
+
+Ruta típica en NetBeans:
+- Tools > Java Platforms
+- agregar o seleccionar JDK 25
+
+====================================================================
+12. REVISION DE LA CONFIGURACION DE CONEXION EN JAVA
+====================================================================
+PASO 37.
+Abrir el archivo:
+src/main/java/com/mycompany/farma/grupo_02/conexion/ConexionOracle.java
+
+PASO 38.
+Verificar que los siguientes valores coincidan con la instalación local de Oracle:
+- URL = jdbc:oracle:thin:@localhost:1521/orcl
+- USER = FARMA
+- PASSWORD = Farma123
+
+PASO 39.
+Si el servicio Oracle local no se llama ORCL, modificar solamente la URL.
+
+Ejemplo:
+Si el servicio real fuera XEPDB1, la URL debería quedar algo como:
+jdbc:oracle:thin:@localhost:1521/xepdb1
+
+PASO 40.
+Guardar cambios si se modificó la conexión.
+
+====================================================================
+13. COMPILACION DEL PROYECTO
+====================================================================
+PASO 41.
+En NetBeans, hacer clic derecho sobre el proyecto.
+
+PASO 42.
+Elegir la opción:
+Clean and Build
+
+PASO 43.
+Esperar a que termine la compilación.
+
+Resultado esperado:
+- compilación exitosa,
+- resolución del driver JDBC,
+- generación de clases compiladas.
+
+Si aparece error, revisar estos puntos:
+- JDK 25 configurado correctamente,
+- conexión a Internet disponible para descargar dependencias Maven,
+- sintaxis de la URL Oracle correcta,
+- base de datos activa,
+- usuario FARMA creado.
+
+====================================================================
+14. EJECUCION DE LA APLICACION PRINCIPAL
+====================================================================
+PASO 44.
+Localizar la clase principal:
+com.mycompany.farma.grupo_02.app.AppFarma
+
+PASO 45.
+Ejecutar el proyecto con alguna de estas opciones:
+- botón Run Project en NetBeans,
+- clic derecho al proyecto > Run,
+- o ejecutar directamente AppFarma.java.
+
+PASO 46.
+La aplicación debería abrir ventanas gráficas con JOptionPane.
+
+PASO 47.
+En la ventana de login ingresar uno de estos accesos:
+
+Administrador:
+- Usuario: admin
+- Clave: admin123
+
+Farmacéutico:
+- Usuario: rosa
+- Clave: rosa123
+
+PASO 48.
+Después del login, debe aparecer el menú principal del sistema.
+
+====================================================================
+15. FUNCIONALIDADES ESPERADAS AL EJECUTAR LA APP
+====================================================================
+Según la clase AppFarma.java, el menú principal incluye al menos estas opciones:
+
+1. Registrar paciente
+2. Consultar paciente por ID
+3. Listar pacientes
+4. Registrar medicamento
+5. Consultar medicamento por ID
+6. Listar medicamentos
+7. Registrar usuario
+8. Consultar usuario por ID
+9. Registrar médico
+10. Consultar médico por ID
+11. Registrar receta
+12. Consultar receta por ID
+13. Dispensar medicamento
+14. Anular dispensación
+0. Salir
+
+Esto confirma que el proyecto no es solo estructura de base de datos, sino una aplicación
+funcional conectada a Oracle.
+
+====================================================================
+16. PRUEBAS BASICAS RECOMENDADAS PARA EL PROFESOR
+====================================================================
+Se recomienda validar al menos lo siguiente:
+
+PRUEBA 01.
+Iniciar sesión con admin / admin123.
+
+PRUEBA 02.
+Listar pacientes y confirmar que aparezcan los datos de prueba.
+
+PRUEBA 03.
+Listar medicamentos y confirmar existencia de medicamentos cargados.
+
+PRUEBA 04.
+Consultar receta por ID, usando los registros iniciales.
+
+PRUEBA 05.
+Dispensar un medicamento de una receta activa y verificar:
+- que no exceda lo autorizado,
+- que descuente stock,
+- que deje trazabilidad.
+
+PRUEBA 06.
+Intentar dispensar una cantidad mayor a la autorizada para comprobar la validación.
+
+PRUEBA 07.
+Anular una dispensación y verificar:
+- reversión de stock,
+- ajuste de cantidades dispensadas,
+- reapertura de receta cuando corresponda.
+
+====================================================================
+17. CLASES DE PRUEBA INCLUIDAS EN EL PROYECTO
+====================================================================
+Además de la app principal, el proyecto incluye clases de prueba como:
+- PruebaConexion.java
+- PruebaLoginUsuario.java
+- PruebaPacienteDAO.java
+- PruebaPacienteCRUD.java
+- PruebaMedicoDAO.java
+- PruebaMedicoCRUD.java
+- PruebaMedicamentoDAO.java
+- PruebaMedicamentoCRUD.java
+- PruebaUsuarioDAO.java
+- PruebaUsuarioCRUD.java
+- PruebaRecetaDAO.java
+- PruebaDispensacionDAO.java
+- PruebaAnularDispensacion.java
+- PruebaListarMedicamentos.java
+- PruebaListarPacientes.java
+
+Estas clases pueden utilizarse para revisión adicional, aunque para la demostración general
+no son estrictamente necesarias si ya corre AppFarma.
+
+====================================================================
+18. POSIBLES ERRORES Y COMO RESOLVERLOS
+====================================================================
+CASO 01. Error de conexión a Oracle desde Java
+Causas posibles:
+- Oracle no está iniciado,
+- listener apagado,
+- servicio distinto de ORCL,
+- usuario FARMA no existe,
+- clave incorrecta.
+
+Solución:
+- iniciar Oracle,
+- revisar listener,
+- confirmar servicio,
+- validar la URL en ConexionOracle.java,
+- probar la conexión primero desde SQL Developer.
+
+CASO 02. Maven no descarga dependencias
+Causas posibles:
+- sin Internet,
+- proxy institucional,
+- repositorio Maven bloqueado.
+
+Solución:
+- conectar a Internet,
+- reintentar desde NetBeans,
+- revisar configuración Maven del equipo.
+
+CASO 03. Error por versión de Java
+Causa:
+- se intenta compilar con una versión distinta a JDK 25.
+
+Solución:
+- instalar y configurar JDK 25 en NetBeans.
+
+CASO 04. Error al ejecutar scripts PL/SQL
+Causa:
+- ejecución por Ctrl+Enter en lugar de F5,
+- el usuario no tiene los privilegios necesarios,
+- los scripts se ejecutaron fuera de orden.
+
+Solución:
+- usar Run Script (F5),
+- asegurarse de ejecutar 00 con SYSDBA,
+- ejecutar los scripts en el orden indicado en esta guía.
+
+CASO 05. Error por objetos ya existentes
+Causa:
+- se está intentando reinstalar sobre un esquema que ya tenía objetos cargados.
+
+Solución:
+- usar una instalación limpia,
+- o eliminar previamente los objetos del esquema FARMA,
+- o recrear el usuario FARMA desde cero.
+
+====================================================================
+19. RECOMENDACION DE INSTALACION LIMPIA
+====================================================================
+Para evitar inconsistencias, lo mejor es que el profesor haga la prueba en un esquema limpio.
+
+La forma más segura es:
+1. crear el usuario FARMA nuevamente desde cero,
+2. conectarse con FARMA,
+3. ejecutar todos los scripts en orden,
+4. abrir el proyecto en NetBeans,
+5. compilar y correr.
+
+====================================================================
+20. ORDEN RESUMIDO DE TODO EL PROCESO
+====================================================================
+Resumen rápido de ejecución:
+
+01. Descomprimir el ZIP.
+02. Instalar Oracle Database 19c.
+03. Instalar SQL Developer.
+04. Instalar JDK 25.
+05. Instalar Apache NetBeans 29.
+06. Abrir SQL Developer como SYSDBA.
+07. Ejecutar 00_instalacion/CREAR_usuario_farma.sql.
+08. Crear conexión con FARMA / Farma123.
+09. Ejecutar 01_tablas.
+10. Ejecutar 02_constraints.
+11. Ejecutar 03_vistas.
+12. Ejecutar 04_funciones.
+13. Ejecutar todos los archivos de 05_procedimientos.
+14. Ejecutar 06_paquetes parte 1 y parte 2.
+15. Ejecutar 07_triggers.
+16. Ejecutar 08_cursores.
+17. Ejecutar 09_datos_prueba.
+18. Revisar que existan datos de prueba.
+19. Abrir el proyecto en NetBeans 29.
+20. Verificar JDK 25.
+21. Revisar ConexionOracle.java.
+22. Hacer Clean and Build.
+23. Ejecutar AppFarma.
+24. Ingresar con admin/admin123 o rosa/rosa123.
+25. Probar el sistema.
+
+====================================================================
+21. DATOS CLAVE FINALES
+====================================================================
+IDE usada: Apache NetBeans 29
+JDK requerido: Java JDK 25
+Base de datos: Oracle Database 19c
+Cliente de base de datos: Oracle SQL Developer (versión compatible con 19c)
+Usuario Oracle del proyecto: FARMA
+Clave Oracle del proyecto: Farma123
+URL JDBC configurada: jdbc:oracle:thin:@localhost:1521/orcl
+Main class del proyecto: com.mycompany.farma.grupo_02.app.AppFarma
+Usuario inicial del sistema: admin / admin123
+Usuario alterno del sistema: rosa / rosa123
+
+FIN DEL DOCUMENTO (muchas gracias profesor por leer todas las instrucciones a pesar de ser tan extensas, esperamos que todo funcione correctamente, feliz fin de cuatrimestre )
